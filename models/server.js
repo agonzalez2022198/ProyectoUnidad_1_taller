@@ -29,7 +29,7 @@ class Server{
 
 
     routes(){
-        this.app.use(this.authPath, require('../rutas routes'))
+        //this.app.use(this.authPath, require('../rutas routes'))
     }
 
     listen(){
