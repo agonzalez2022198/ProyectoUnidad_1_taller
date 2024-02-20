@@ -11,5 +11,13 @@ const getProductsById = async (req, res) => {
 }
 
 const putProducts = async (req, res = response)=>{
-    
+
+}
+
+
+
+module.exports = {
+    getProductsById,
+    productsGet,
+    putProducts
 }
