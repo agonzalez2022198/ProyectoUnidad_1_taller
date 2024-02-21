@@ -10,6 +10,7 @@ class Server{
         this.app = express();
         this.port = process.env.PORT;
         this.usuarioClientePath = '/api/usuarioCliente';
+        this.productoPath = '/api/productos'
 
         this.conectarDB();
         this.middlewares();
@@ -29,7 +30,8 @@ class Server{
 
 
     routes(){
-        this.app.use(this.usuarioClientePath, require('../routes/user.routes'))
+        this.app.use(this.usuarioClientePath, require('../routes/user.routes'));
+        this.app.use(this.productoPath, require('../routes/producto.routes'));
     }
 
     listen(){
