@@ -1,4 +1,3 @@
-const bcryptjs = require('bcrypt');
 const Categoria = require('../models/categorias.model');
 const { response } = require('express');
 
@@ -31,20 +30,26 @@ const getCategoriasById = async (req, res) => {
     });
 }
 
-
+// No me funcionaba, hasta que busqué métodos para arreglarlo.
 const putCategorias = async (req, res = response) => {
     const { id } = req.params;
     const { _id, ...resto } = req.body;
 
+    try {
+        
+        await Categoria.findByIdAndUpdate(id, resto);
 
-    await Categoria.findByIdAndUpdate(id, resto);
+        
+        const categoriaActualizada = await Categoria.findById(id);
 
-    const categoria = Categoria.findOne({id});
-
-    res.status(200).json({
-        categoria,
-        msg: 'La categorias se ha actualizado, compadre'
-    });
+        res.status(200).json({
+            categoria: categoriaActualizada,
+            msg: 'La categoría se ha actualizado'
+        });
+    } catch (error) {
+        console.error('Error al actualizar la categoría:', error);
+        res.status(500).json({ error: 'Error del servidor al actualizar la categoría' });
+    }
 }
 
 
