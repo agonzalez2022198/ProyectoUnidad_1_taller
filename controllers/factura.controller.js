@@ -36,18 +36,18 @@ const putFactura = async (req, res = response) => {
 
     try {
         
-        await factura.findByIdAndUpdate(id, resto);
+        await Factura.findByIdAndUpdate(id, resto);
 
         
         const facturaAct = await Factura.findById(id);
 
         res.status(200).json({
-            categoria: facturaAct,
+            factura: facturaAct,
             msg: 'La factura se ha actualizado'
         });
     } catch (error) {
-        console.error('Error al actualizar la categoría:', error);
-        res.status(500).json({ error: 'Error del servidor al actualizar la categoría' });
+        console.error('Error al actualizar la factura:', error);
+        res.status(500).json({ error: 'Error del servidor al actualizar la factura' });
     }
 }
 
@@ -66,18 +66,9 @@ const facturaDelete = async (req, res) => {
 
 const facturaPost = async (req, res) => {
 
-    const fecha = new Date();
-    const hora = fecha.getHours();
-    const minutos = fecha.getMinutes();
-    const segundos = fecha.getSeconds();
-
-    const horaFormateada = (hora < 10) ? '0' + hora : hora;
-    const minutosFormateados = (minutos < 10) ? '0' + minutos : minutos;
-    const segundosFormateados = (segundos < 10) ? '0' + segundos : segundos;
-    
-    var fechita = `${horaFormateada}:${minutosFormateados}:${segundosFormateados}`;
+   
     const {numeroFactura, cliente, producto, detalle} = req.body;
-    const factura = new Factura({numeroFactura, fechita, cliente, producto, detalle});
+    const factura = new Factura({numeroFactura, cliente, producto, detalle});
 
     await factura.save();
     res.status(202).json({

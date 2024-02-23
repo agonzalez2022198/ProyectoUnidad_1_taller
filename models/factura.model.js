@@ -8,8 +8,9 @@ const FacturaSchema = Schema({
     },
 
     fechaEmision: {
-        type: String,
-        required: [true, 'Tomar la fecha de la pc']
+        type: Date,
+        default: Date.now,
+        required: [true, "Fecha automática"]
     },
 
     cliente: {
