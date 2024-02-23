@@ -71,14 +71,12 @@ const facturaPost = async (req, res) => {
     const minutos = fecha.getMinutes();
     const segundos = fecha.getSeconds();
 
-    if(hora < 10) hora = '0' + hora;
-
-    if(minutos < 10) minutos = '0' + minutos;
-
-    if( segundos < 10 ) segundos = '0' + segundos;
+    const horaFormateada = (hora < 10) ? '0' + hora : hora;
+    const minutosFormateados = (minutos < 10) ? '0' + minutos : minutos;
+    const segundosFormateados = (segundos < 10) ? '0' + segundos : segundos;
     
-    var fechita = hora + ':' + minutos + ':' + segundos;
-    const {numeroFactura, fechita, cliente, producto, detalle} = req.body;
+    var fechita = `${horaFormateada}:${minutosFormateados}:${segundosFormateados}`;
+    const {numeroFactura, cliente, producto, detalle} = req.body;
     const factura = new Factura({numeroFactura, fechita, cliente, producto, detalle});
 
     await factura.save();
@@ -89,5 +87,9 @@ const facturaPost = async (req, res) => {
 
 
 module.exports = {
-
+    facturasGet,
+    getFacturasById,
+    putFactura,
+    facturaDelete,
+    facturaPost
 }
