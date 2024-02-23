@@ -22,7 +22,7 @@ const FacturaSchema = Schema({
         required: [true, 'Productos en el carrito']
     },
 
-    detaller: {
+    detalle: {
         type: String,
         required: [true, 'Detalles de la factura']
     },

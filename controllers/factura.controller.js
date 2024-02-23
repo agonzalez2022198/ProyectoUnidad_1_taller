@@ -65,11 +65,29 @@ const facturaDelete = async (req, res) => {
 
 
 const facturaPost = async (req, res) => {
-    const {da, descripcionCat} = req.body;
-    const categoria = new Categoria({nombreCat, descripcionCat});
 
-    await categoria.save();
+    const fecha = new Date();
+    const hora = fecha.getHours();
+    const minutos = fecha.getMinutes();
+    const segundos = fecha.getSeconds();
+
+    if(hora < 10) hora = '0' + hora;
+
+    if(minutos < 10) minutos = '0' + minutos;
+
+    if( segundos < 10 ) segundos = '0' + segundos;
+    
+    var fechita = hora + ':' + minutos + ':' + segundos;
+    const {numeroFactura, fechita, cliente, producto, detalle} = req.body;
+    const factura = new Factura({numeroFactura, fechita, cliente, producto, detalle});
+
+    await factura.save();
     res.status(202).json({
-        categoria
+        factura
     });
+}
+
+
+module.exports = {
+
 }
