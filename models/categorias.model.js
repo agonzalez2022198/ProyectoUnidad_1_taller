@@ -10,6 +10,11 @@ const CategoriaSchema = Schema({
     descripcionCat:{
         type: String,
         required: [true, 'Es necesaria una descripcion']
+    },
+
+    estado: {
+        type: Boolean,
+        default: true
     }
 
 
