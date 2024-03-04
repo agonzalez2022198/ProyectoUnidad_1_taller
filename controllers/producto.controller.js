@@ -1,6 +1,7 @@
 //const bcrypt = require('bcrypt');
 const Producto = require('../models/producto.model');
 const { response } = require('express');
+const Categoria = require('../models/categorias.model');
 
 const productosGet = async (req, res = response) => {
     const {limite, desde} = req.query;
@@ -76,10 +77,40 @@ const productosPost = async (req, res) => {
 }
 
 
+const postProductos = async (req, res) => {
+    const category = req.categoria;
+
+    const { nameProduct, descripcion, precio, stock } = req.body;
+
+    try {
+        const product = new Producto({
+            nameProduct, descripcion, precio, stock,
+            categoria: category._id,
+        });
+
+        await product.save();
+
+        const categoria = await Categoria.findById(category._id);
+
+        res.status(200).json({
+            msg: 'Publicación agregada exitosamente',
+            product: {
+                ...product.toObject(),
+                categoria: categoria.nombreCat
+            }
+        });
+    } catch (error) {
+        console.error('Error al crear el producto:', error);
+        res.status(500).json({ error: 'Error al crear el producto' });
+    }
+};
+
+
 module.exports = {
     productosGet,
     getProductosById,
     putProductos,
     productosDelete,
-    productosPost
+    productosPost,
+    postProductos
 }
