@@ -78,24 +78,30 @@ const productosPost = async (req, res) => {
 
 
 const postProductos = async (req, res) => {
-    const category = req.categoria;
-
-    const { nameProduct, descripcion, precio, stock } = req.body;
+    const { nombreCategoria, nameProduct, descripcion, precio, stock } = req.body;
 
     try {
-        const product = new Producto({
+        // Buscar la categoría por nombre
+        let categoria = await Categoria.findOne({ nombreCat: nombreCategoria });
+
+        // Si la categoría no existe, crearla
+        if (!categoria) {
+            categoria = new Categoria({ nombreCat: nombreCategoria });
+            await categoria.save();
+        }
+
+        // Crear el producto y asignarle la categoría
+        const producto = new Producto({
             nameProduct, descripcion, precio, stock,
-            categoria: category._id,
+            categoria: categoria._id,
         });
 
-        await product.save();
-
-        const categoria = await Categoria.findById(category._id);
+        await producto.save();
 
         res.status(200).json({
-            msg: 'Publicación agregada exitosamente',
+            msg: 'Producto agregado exitosamente',
             product: {
-                ...product.toObject(),
+                ...producto.toObject(),
                 categoria: categoria.nombreCat
             }
         });
@@ -104,6 +110,7 @@ const postProductos = async (req, res) => {
         res.status(500).json({ error: 'Error al crear el producto' });
     }
 };
+
 
 
 module.exports = {

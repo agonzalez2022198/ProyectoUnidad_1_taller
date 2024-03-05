@@ -8,7 +8,7 @@ const {
     productosPost,
     productosGet,
     getProductosById,
-    putProductos, productosDelete
+    putProductos, productosDelete, postProductos
 } = require('../controllers/producto.controller');
 
 const {existeProductById } = require('../helpers/db-validator');
@@ -40,11 +40,12 @@ router.post(
     [
         check("nameProduct", "El nombre no puede estar vacío").not().isEmpty(),
         check("descripcion", "Debe haber una descripcion").not().isEmpty(),
-        check("categoria", "La categoria no puede estar vacia").not().isEmpty(),
+        check("nombreCategoria", "La categoria no puede estar vacia").not().isEmpty(), // Cambiado a nombreCategoria
         check("precio", "El precio no puede estar vacio").not().isEmpty(),
         check("stock", "El stock no puede estar vacio").not().isEmpty(),
-        validarCampos,
-    ], productosPost);
+         validarCampos,
+    ],  postProductos
+);
 
 router.delete(
     "/:id",
