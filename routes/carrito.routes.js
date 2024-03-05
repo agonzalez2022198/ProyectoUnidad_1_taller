@@ -20,8 +20,11 @@ const router = Router();
 router.post(
     "/",
     [
-        check("producto", "El producto no puede ir vacío").not().isEmpty(),
+        check("productos", "El producto no puede ir vacío").not().isEmpty(),
         check("cantidad", "La cantidad no puede estar vacía").not().isEmpty(),
          validarCampos,
     ],  postCarrito
 );
+
+
+module.exports = router;

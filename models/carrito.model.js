@@ -9,9 +9,8 @@ const CarritoSchema = mongoose.Schema({
     },
 
     cantidad: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Product',
-        required: true
+        type: String,
+        required: [true, "Ingresa la cantidad"]
     },
 
     estado: {

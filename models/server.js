@@ -13,6 +13,7 @@ class Server{
         this.productoPath = '/api/productos';
         this.categoriaPath = '/api/categorias';
         this.facturaPath = '/api/facturas';
+        this.carritoPath = '/api/carrito';
 
         this.conectarDB();
         this.middlewares();
@@ -36,6 +37,7 @@ class Server{
         this.app.use(this.productoPath, require('../routes/producto.routes'));
         this.app.use(this.categoriaPath, require('../routes/categoria.routes'));
         this.app.use(this.facturaPath, require('../routes/facturas.routes'));
+        this.app.use(this.carritoPath, require('../routes/carrito.routes'));
     }
 
     listen(){

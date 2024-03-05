@@ -54,30 +54,31 @@ const carritoDelete = async (req, res) => {
 
 
 const postCarrito = async (req, res) => {
-    const { producto, cantidad } = req.body;
+    const { productos, cantidad } = req.body;
 
     try {
-        
-        let product = await Producto.findOne({ nemeProduct: producto });
+        // Buscar el producto en la base de datos
+        let product = await Producto.findOne({ nameProduct: productos });
 
-        // Si la categoría no existe, crearla
+        // Si el producto no existe, enviar un mensaje de error
         if (!product) {
-            product = new Producto({ nameProduct: producto });
-            await categoria.save();
+            return res.status(404).json({ error: 'Producto no encontrado' });
         }
 
-        // Crear el producto y asignarle la categoría
+        // Crear el carrito y asignarle el producto encontrado
         const carrito = new Carrito({
-            producto: producto._id, cantidad
+            productos: product._id, cantidad
         });
 
+        // Guardar el carrito en la base de datos
         await carrito.save();
 
+        // Enviar respuesta exitosa
         res.status(200).json({
             msg: 'Producto agregado exitosamente',
             car: {
                 ...carrito.toObject(),
-                producto: producto.nameProduct
+                productos: product.nameProduct
             }
         });
     } catch (error) {
@@ -85,6 +86,7 @@ const postCarrito = async (req, res) => {
         res.status(500).json({ error: 'Error al crear el producto' });
     }
 };
+
 
 
 
