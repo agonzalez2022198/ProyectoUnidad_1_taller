@@ -8,14 +8,14 @@ const {
     productosPost,
     productosGet,
     getProductosById,
-    putProductos, productosDelete, postProductos
+    putProductos, productosDelete, postProductos, productosGetCat
 } = require('../controllers/producto.controller');
 
 const {existeProductById } = require('../helpers/db-validator');
 
 const router = Router();
 
-router.get("/", productosGet);
+router.get("/", productosGetCat);
 
 
 router.get(

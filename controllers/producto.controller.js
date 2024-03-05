@@ -22,6 +22,46 @@ const productosGet = async (req, res = response) => {
     });
 }
 
+
+const productosGetCat = async (req, res = response) => {
+    const { limite, desde } = req.query;
+    const query = { estado: true };
+
+    try {
+        // Obtener productos paginados
+        const [total, productos] = await Promise.all([
+            Producto.countDocuments(query),
+            Producto.find(query)
+                .skip(Number(desde))
+                .limit(Number(limite))
+        ]);
+
+        // Array para almacenar productos con categorías
+        const productosConCategoria = [];
+
+        // Iterar sobre los productos para buscar la categoría de cada uno
+        for (const producto of productos) {
+            // Buscar la categoría correspondiente al producto
+            const categoria = await Categoria.findById(producto.categoria);
+
+            // Agregar el producto con la categoría a la lista
+            productosConCategoria.push({
+                ...producto.toObject(),
+                categoria: categoria ? categoria.toObject() : null // Si no se encuentra la categoría, se asigna null
+            });
+        }
+
+        res.status(200).json({
+            total,
+            productos: productosConCategoria
+        });
+    } catch (error) {
+        console.error('Error al obtener los productos:', error);
+        res.status(500).json({ error: 'Error al obtener los productos' });
+    }
+};
+
+
 const getProductosById = async (req, res = response) => {
     const {id} = req.params;
     const producto = await Usuario.findOne({_id: id});
@@ -36,10 +76,6 @@ const putProductos = async (req, res = response) =>{
     const { id } = req.params;
     const {_d, ...resto } = req.body;
 
-    //if(password){
-    //    const salt = bcryptjs.genSaltSync();
-    //    resto.password = bcryptjs.hashSync(password, salt);
-    //}
 
     await Producto.findByIdAndUpdate(id, resto);
 
@@ -119,5 +155,6 @@ module.exports = {
     putProductos,
     productosDelete,
     productosPost,
-    postProductos
+    postProductos,
+    productosGetCat
 }
