@@ -1,6 +1,6 @@
 const Producto = require('../models/producto.model');
 const { response } = require('express');
-const Cart = require('../models/carrito.model');
+const Carrito = require('../models/carrito.model');
 //const Session = require('express-session');
 
 
@@ -78,10 +78,7 @@ const postCarrito = async (req, res) => {
         // Enviar respuesta exitosa
         res.status(200).json({
             msg: 'Producto agregado exitosamente',
-            car: {
-                ...carrito.toObject(),
-                productos: product.nameProduct
-            }
+            carrito
         });
     } catch (error) {
         console.error('Error al crear el producto:', error);
@@ -100,20 +97,21 @@ const addToCart = async (req, res) => {
             return res.status(404).json({ error: 'Producto no encontrado' });
         }
 
-        // Verificar si hay suficiente stock
         if (product.stock < quantity) {
             return res.status(400).json({ error: 'No hay suficiente stock disponible' });
         }
 
         // Crear o actualizar el carrito
-        let cart = await Cart.findOne({ user: req.user._id });
+        let cart = await Carrito.findOne({ /* Aquí puedes colocar cualquier condición que necesites para encontrar el carrito */ });
         if (!cart) {
-            cart = new Cart({
-                user: req.user._id,
+            cart = new Carrito({
                 items: [{ product: productId, quantity }]
             });
+
+
+        }else if (!cart.items) {
+        cart.items = []; 
         } else {
-            // Verificar si el producto ya está en el carrito
             const itemIndex = cart.items.findIndex(item => item.product.equals(productId));
             if (itemIndex !== -1) {
                 cart.items[itemIndex].quantity += quantity;
@@ -122,15 +120,15 @@ const addToCart = async (req, res) => {
             }
         }
 
-        // Guardar el carrito actualizado
         await cart.save();
 
-        res.status(200).json({ message: 'Producto agregado al carrito exitosamente' });
+        res.status(200).json({ message: 'Producto agregado al carrito exitosamente', cart });
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Error interno del servidor' });
     }
 };
+
 
 
 
