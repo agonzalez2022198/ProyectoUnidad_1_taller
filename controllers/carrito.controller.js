@@ -1,6 +1,8 @@
 const Producto = require('../models/producto.model');
 const { response } = require('express');
-const Carrito = require('../models/carrito.model');
+const Cart = require('../models/carrito.model');
+//const Session = require('express-session');
+
 
 
 
@@ -88,11 +90,54 @@ const postCarrito = async (req, res) => {
 };
 
 
+const addToCart = async (req, res) => {
+    try {
+        const { productId, quantity } = req.body;
+
+        // Verificar si el producto existe
+        const product = await Producto.findById(productId);
+        if (!product) {
+            return res.status(404).json({ error: 'Producto no encontrado' });
+        }
+
+        // Verificar si hay suficiente stock
+        if (product.stock < quantity) {
+            return res.status(400).json({ error: 'No hay suficiente stock disponible' });
+        }
+
+        // Crear o actualizar el carrito
+        let cart = await Cart.findOne({ user: req.user._id });
+        if (!cart) {
+            cart = new Cart({
+                user: req.user._id,
+                items: [{ product: productId, quantity }]
+            });
+        } else {
+            // Verificar si el producto ya está en el carrito
+            const itemIndex = cart.items.findIndex(item => item.product.equals(productId));
+            if (itemIndex !== -1) {
+                cart.items[itemIndex].quantity += quantity;
+            } else {
+                cart.items.push({ product: productId, quantity });
+            }
+        }
+
+        // Guardar el carrito actualizado
+        await cart.save();
+
+        res.status(200).json({ message: 'Producto agregado al carrito exitosamente' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+    }
+};
+
 
 
 module.exports = {
     carritoGet,
     putCarrito,
     carritoDelete,
-    postCarrito
+    postCarrito,
+    addToCart
 }
