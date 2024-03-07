@@ -119,10 +119,45 @@ const addToCart = async (req, res) => {
 const updateCarrito = async (req, res) => {
 
     try {
-        const {id} = req.params;
-        
+        const {name} = req.params;
+        const {productos, cantidad} = req.body;
+
+        const carrito = await Carrito.findOne(name);
+
+        if(!carrito){
+            return res.status(404).json({
+                error: "Ese carrito no existe"
+            });
+        }
+
+        const producto = await Producto.findOne({nameProduct: productos});
+        if(!producto){
+            return res.status(404).json({
+                error: "Producto no encontrado"
+            });
+        }
+
+        const index = carrito.productos.findIndex(item => item.equals(producto._id));
+
+        if(index !== -1){
+            carrito.cantidad[index] += cantidad;
+
+        }else{
+            carrito.productos.push(producto._id);
+            carrito.cantidad.push(cantidad);
+
+        }
+
+        await carrito.save();
+
+        res.status(200).json({
+            msg: "Nuevo producto al carrito",
+            carrito
+        });
+
     } catch (e) {
-        
+        console.error('Error al actualizar el carrito:', e);
+        res.status(500).json({ error: 'Error!!!!!' });
     }
 
 }
