@@ -9,8 +9,8 @@ const CarritoSchema = mongoose.Schema({
     },
 
     cantidad: {
-        type: Number,
-        required: [true, "Ingresa la cantidad"]
+        type: [Number],
+        default: 1
     },
 
     estado: {

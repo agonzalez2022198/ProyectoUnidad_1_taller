@@ -27,7 +27,14 @@ const router = Router();
 );*/
 
 
-router.post('/cart/add', addToCart);
+router.post('/cart/add',
+    [
+        check("productoName", "No puede estar vacío").not().isEmpty(),
+        //check("quantity", "No puede estar vacio"),
+        validarCampos
+    ],
+    addToCart
+);
 
 
 module.exports = router;

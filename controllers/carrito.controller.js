@@ -89,45 +89,43 @@ const postCarrito = async (req, res) => {
 
 const addToCart = async (req, res) => {
     try {
-        const { productId, quantity } = req.body;
+        const {productoName} = req.body;
 
-        // Verificar si el producto existe
-        const product = await Producto.findById(productId);
-        if (!product) {
+        //const cantidad = cantidad || 1;
+
+        const producto = await Producto.findOne({nameProduct: productoName});
+
+        if(!producto){
+            console.log("El producto con ese nombre no existe");
             return res.status(404).json({ error: 'Producto no encontrado' });
         }
 
-        if (product.stock < quantity) {
-            return res.status(400).json({ error: 'No hay suficiente stock disponible' });
-        }
+        const carrito = new Carrito({productos: producto._id});
 
-        // Crear o actualizar el carrito
-        let cart = await Carrito.findOne({ /* Aquí puedes colocar cualquier condición que necesites para encontrar el carrito */ });
-        if (!cart) {
-            cart = new Carrito({
-                items: [{ product: productId, quantity }]
-            });
+        await carrito.save();
 
+        res.status(200).json({
+            msg: 'Producto agregado exitosamente',
+            carrito
+        });
 
-        }else if (!cart.items) {
-        cart.items = []; 
-        } else {
-            const itemIndex = cart.items.findIndex(item => item.product.equals(productId));
-            if (itemIndex !== -1) {
-                cart.items[itemIndex].quantity += quantity;
-            } else {
-                cart.items.push({ product: productId, quantity });
-            }
-        }
-
-        await cart.save();
-
-        res.status(200).json({ message: 'Producto agregado al carrito exitosamente', cart });
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Error interno del servidor' });
     }
 };
+
+
+const updateCarrito = async (req, res) => {
+
+    try {
+        const {id} = req.params;
+        
+    } catch (e) {
+        
+    }
+
+}
 
 
 
