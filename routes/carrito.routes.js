@@ -8,7 +8,7 @@ const {
     carritoGet,
     putCarrito,
     carritoDelete,
-    postCarrito, addToCart
+    postCarrito, addToCart, updateCarrito
 } = require('../controllers/carrito.controller');
 
 const {existeProductById } = require('../helpers/db-validator');
@@ -34,6 +34,14 @@ router.post('/cart/add',
         validarCampos
     ],
     addToCart
+);
+
+router.put('/update/:id',
+    [
+        check("productos", "No puede estar vacío").not().isEmpty(),
+        validarCampos
+    ],
+    updateCarrito
 );
 
 

@@ -119,10 +119,10 @@ const addToCart = async (req, res) => {
 const updateCarrito = async (req, res) => {
 
     try {
-        const {name} = req.params;
+        const {id} = req.params;
         const {productos, cantidad} = req.body;
 
-        const carrito = await Carrito.findOne(name);
+        const carrito = await Carrito.findById(id);
 
         if(!carrito){
             return res.status(404).json({
@@ -170,5 +170,6 @@ module.exports = {
     putCarrito,
     carritoDelete,
     postCarrito,
-    addToCart
+    addToCart,
+    updateCarrito
 }
