@@ -37,12 +37,12 @@ router.put(
     ], putFactura);
 
 router.post(
-    "/",
+    "/:id",
     [
-        check("numeroFactura", "El numero no puede estar vacío").not().isEmpty(),
-        check("cliente", "nombre de cliente no puede estar vacio").not().isEmpty(),
-        check("producto", "Pon el producto").not().isEmpty(),
-        check("detalle", "Y el detalle??").not().isEmpty(),
+        //check("numeroFactura", "El numero no puede estar vacío").not().isEmpty(),
+        //check("cliente", "nombre de cliente no puede estar vacio").not().isEmpty(),
+        //check("producto", "Pon el producto").not().isEmpty(),
+        //check("detalle", "Y el detalle??").not().isEmpty(),
         validarCampos,
     ], facturaPost);
 
