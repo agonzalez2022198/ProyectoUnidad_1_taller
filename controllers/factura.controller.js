@@ -3,15 +3,15 @@ const { response } = require('express');
 const Carrito = require("../models/carrito.model");
 const Producto = require("../models/producto.model");
 
-const facturasGet = async (req, res = response) =>{
-    const {limite, desde} = req.query;
-    const query = {estado: true};
+const facturasGet = async (req, res = response) => {
+    const { limite, desde } = req.query;
+    const query = { estado: true };
 
-    cibst [toDefaultValur, factura] = await Promise.all([
+    cibst[toDefaultValur, factura] = await Promise.all([
         Factura.countDocuments(query),
         Factura.find(query)
-        .skip(Number(desde))
-        .limit(Number(limite))
+            .skip(Number(desde))
+            .limit(Number(limite))
     ]);
 
     res.status(200).json({
@@ -23,24 +23,23 @@ const facturasGet = async (req, res = response) =>{
 
 
 const getFacturasById = async (req, res) => {
-    const {id} = req.params;
-    const factura = await Factura.findOne({_id: id});
+    const { id } = req.params;
+    const factura = await Factura.findOne({ _id: id });
 
     res.status(200).json({
         factura
     });
 }
 
-// No me funcionaba, hasta que busqué métodos para arreglarlo.
 const putFactura = async (req, res = response) => {
     const { id } = req.params;
     const { _id, ...resto } = req.body;
 
     try {
-        
+
         await Factura.findByIdAndUpdate(id, resto);
 
-        
+
         const facturaAct = await Factura.findById(id);
 
         res.status(200).json({
@@ -56,8 +55,8 @@ const putFactura = async (req, res = response) => {
 
 const facturaDelete = async (req, res) => {
 
-    const {id} = req.params;
-    const factura = await Factura.findByIdAndUpdate(id, {estado: false});
+    const { id } = req.params;
+    const factura = await Factura.findByIdAndUpdate(id, { estado: false });
 
     res.status(200).json({
         factura,
@@ -69,35 +68,48 @@ const facturaDelete = async (req, res) => {
 const facturaPost = async (req, res) => {
     try {
         const { id } = req.params;
-        //const { numeroFactura, cliente, detalle } = req.body;
+        const { numeroFactura, cliente, detalle, totalPay } = req.body;
 
-        // Buscar el carrito por su ID
+
         const carrito = await Carrito.findById(id);
 
         if (!carrito) {
             return res.status(404).json({ error: 'Carrito no encontrado, men' });
         }
 
-        // Obtener los detalles de los productos del carrito
         const productos = await Promise.all(carrito.productos.map(async (item) => {
             const producto = await Producto.findById(item.producto);
-            return { producto, cantidad: item.cantidad };
+            return {
+                producto,
+                cantidad: item.cantidad
+            };
         }));
+
+
+
+        /*const detallesProductos = productos.map(producto => {
+            return {
+                nombre: producto.nombre,
+                precio: producto.precio,
+                cantidad: producto.cantidad
+            };
+        });*/
 
         res.status(202).json({
             productos
         });
 
-        // Crear la factura con los detalles de los productos del carrito
-        //const factura = new Factura({ numeroFactura, cliente, productos, detalle: 'Detalles de la factura' });
 
-        // Guardar la factura en la base de datos
-        //await factura.save();
+        const factura = new Factura({ numeroFactura, cliente, productos, detalle, totalPay });
+        await factura.save();
 
-        //res.status(202).json({  });
+        res.status(202).json({  
+            msg: "Compra realizada",
+            factura
+        });
     } catch (error) {
         console.error('Error al crear la factura:', error);
-        res.status(500).json({ error: 'Error al crear la factura' });
+        res.status(404).json({ error: 'Error al crear la factura' });
     }
 }
 
