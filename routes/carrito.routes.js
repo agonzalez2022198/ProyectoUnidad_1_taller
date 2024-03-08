@@ -30,7 +30,7 @@ const router = Router();
 router.post('/cart/add',
     [
         check("productoName", "No puede estar vacío").not().isEmpty(),
-        //check("quantity", "No puede estar vacio"),
+        check("cantidad", "No puede estar vacío").not().isEmpty(),
         validarCampos
     ],
     addToCart
@@ -38,7 +38,7 @@ router.post('/cart/add',
 
 router.put('/update/:id',
     [
-        check("productos", "No puede estar vacío").not().isEmpty(),
+        check("newProduct", "No puede estar vacío").not().isEmpty(),
         validarCampos
     ],
     updateCarrito
