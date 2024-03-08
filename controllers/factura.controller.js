@@ -1,5 +1,6 @@
 const Factura = require('../models/factura.model');
 const { response } = require('express');
+const carrito = require("../models/carrito.model");
 
 const facturasGet = async (req, res = response) =>{
     const {limite, desde} = req.query;
@@ -65,16 +66,36 @@ const facturaDelete = async (req, res) => {
 
 
 const facturaPost = async (req, res) => {
+    try {
+        const { idCarrito } = req.params;
+        const { numeroFactura, cliente } = req.body;
 
-   
-    const {numeroFactura, cliente, producto, detalle} = req.body;
-    const factura = new Factura({numeroFactura, cliente, producto, detalle});
+        // Buscar el carrito por su ID
+        const carrito = await Carrito.findById(idCarrito);
 
-    await factura.save();
-    res.status(202).json({
-        factura
-    });
+        if (!carrito) {
+            return res.status(404).json({ error: 'Carrito no encontrado' });
+        }
+
+        // Obtener los detalles de los productos del carrito
+        const productos = await Promise.all(carrito.productos.map(async (item) => {
+            const producto = await Producto.findById(item.producto);
+            return { producto, cantidad: item.cantidad };
+        }));
+
+        // Crear la factura con los detalles de los productos del carrito
+        const factura = new Factura({ numeroFactura, cliente, productos, detalle: 'Detalles de la factura' });
+
+        // Guardar la factura en la base de datos
+        await factura.save();
+
+        res.status(202).json({ factura });
+    } catch (error) {
+        console.error('Error al crear la factura:', error);
+        res.status(500).json({ error: 'Error al crear la factura' });
+    }
 }
+
 
 
 module.exports = {

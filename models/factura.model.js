@@ -28,6 +28,11 @@ const FacturaSchema = Schema({
         required: [true, 'Detalles de la factura']
     },
 
+    totalPay: {
+        type: Number,
+        required: [true, "Suma de todos los productos"]
+    },
+
     estado: {
         type: Boolean,
         default: true
