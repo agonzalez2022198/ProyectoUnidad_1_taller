@@ -42,7 +42,6 @@ router.post(
         check("numeroFactura", "El numero no puede estar vacío").not().isEmpty(),
         check("cliente", "nombre de cliente no puede estar vacio").not().isEmpty(),
         check("detalle", "detalle vacío").not().isEmpty(),
-        check("totalPay", "Total pago").not().isEmpty(),
         validarCampos,
     ], facturaPost);
 

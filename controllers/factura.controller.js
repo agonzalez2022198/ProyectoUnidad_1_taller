@@ -70,48 +70,83 @@ const facturaPost = async (req, res) => {
         const { id } = req.params;
         const { numeroFactura, cliente, detalle, totalPay } = req.body;
 
-
         const carrito = await Carrito.findById(id);
 
         if (!carrito) {
             return res.status(404).json({ error: 'Carrito no encontrado, men' });
         }
 
-        const productos = await Promise.all(carrito.productos.map(async (item) => {
-            const producto = await Producto.findById(item.producto);
-            return {
-                producto,
-                cantidad: item.cantidad
-            };
-        }));
+        const cantidadesProductos = carrito.productos.map(item => item.cantidad);
 
-
-
-        /*const detallesProductos = productos.map(producto => {
-            return {
-                nombre: producto.nombre,
-                precio: producto.precio,
-                cantidad: producto.cantidad
-            };
-        });*/
-
-        res.status(202).json({
-            productos
+        // Extraer solo los IDs de los productos del carrito
+        const productosIds = carrito.productos.map(item => {
+            if (item.producto) {
+                return item.producto.toString();
+            } else {
+                return null; // Otra opción podría ser devolver una cadena vacía ''
+            }
         });
 
+        console.log("IDs de los productos del carrito:", productosIds);
 
-        const factura = new Factura({ numeroFactura, cliente, productos, detalle, totalPay });
+        // Continúa con tu lógica aquí...
+
+        const productsCarrito = await Promise.all(productosIds.map(async (productId) => {
+            try {
+                const producto = await Producto.findById(productId);
+                return producto;
+            } catch (error) {
+                console.error(`Error al encontrar el producto con ID ${productId}:`, error);
+                return null; // Otra opción podría ser devolver un objeto con un mensaje de error
+            }
+        }));
+
+        const nombresProductos = productsCarrito.filter(producto => producto !== null).map(producto => producto.nameProduct);
+        const total = nombresProductos.join(', ').toString();
+
+        const precios = productsCarrito.filter(producto => producto !== null).map(producto => producto.precio);
+        const totalP = nombresProductos.join(', ').toString();
+
+        console.log("Nombres de los productos del carrito:", nombresProductos);
+
+        console.log("Catidades:", cantidadesProductos);
+        console.log("Precios:", precios);
+
+        //const totales = cantidadesProductos * precios;
+
+        const totalCompra = productsCarrito.reduce((total, producto, index) => {
+            if (producto) {
+                return total + (producto.precio * cantidadesProductos[index]);
+            } else {
+                return total;
+            }
+        }, 0);
+
+        console.log("Total de la compra:", totalCompra);
+
+        const factura = new Factura({ 
+            numeroFactura, 
+            cliente, 
+            detalle, 
+            producto: nombresProductos.join(', '), // Concatenar los nombres de los productos
+            totalPay: totalCompra 
+        });
+
         await factura.save();
 
-        res.status(202).json({  
+        res.status(202).json({
             msg: "Compra realizada",
             factura
         });
+
     } catch (error) {
         console.error('Error al crear la factura:', error);
-        res.status(404).json({ error: 'Error al crear la factura' });
+        res.status(500).json({ error: 'Error al crear la factura' });
     }
 }
+
+
+
 
 
 

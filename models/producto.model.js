@@ -15,7 +15,7 @@ const ProductoSchema = mongoose.Schema({
         required: true
     },
     precio: {
-        type: String,
+        type: Number,
         required: [true, 'Necesita un precio de ventas']
     },
     stock: {

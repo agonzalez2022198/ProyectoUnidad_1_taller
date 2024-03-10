@@ -91,8 +91,6 @@ const addToCart = async (req, res) => {
     try {
         const { productoName } = req.body;
 
-        //const cantidad = cantidad || 1;
-
         const producto = await Producto.findOne({ nameProduct: productoName });
 
         if (!producto) {
@@ -100,7 +98,7 @@ const addToCart = async (req, res) => {
             return res.status(404).json({ error: 'Producto no encontrado' });
         }
 
-        const carrito = new Carrito({ productos: producto._id });
+        const carrito = new Carrito({ productos: [{ producto: producto._id, cantidad: 1 }] }); // Agregar el producto como un objeto con las propiedades producto y cantidad
 
         await carrito.save();
 
@@ -114,6 +112,7 @@ const addToCart = async (req, res) => {
         res.status(500).json({ error: 'Error interno del servidor' });
     }
 };
+
 
 
 
